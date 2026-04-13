@@ -53,22 +53,18 @@ File Storage + Logging
 
 ## 📁 Project Structure
 
-
-CN Project FTP/
-│
-├── server.py             # Async FTP server
-├── client.py             # Client interface
-├── protocol.py           # Protocol and chunking logic
-├── test_multi_client.py  # Multi-client testing
-│
-├── storage/              # Stored files
-├── logs/                 # Logs
-│
-├── cert.pem              # SSL cert (future use)
-├── key.pem               # SSL key (future use)
-│
+```bash
+CN-Project-FTP/
+├── server.py              # Async FTP server
+├── client.py              # Client interface
+├── protocol.py            # Protocol and chunking logic
+├── test_multi_client.py   # Multi-client testing
+├── storage/               # Stored files
+├── logs/                  # Logs
+├── cert.pem               # SSL cert (future use)
+├── key.pem                # SSL key (future use)
 └── README.md
-
+```
 ---
 
 ## ⚙️ Working
