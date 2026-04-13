@@ -1,229 +1,157 @@
-# 📦 Asynchronous FTP System (CN Project)
+# AsyncFTP — Asynchronous File Transfer System
 
-## 📌 Overview
-This project implements a custom File Transfer Protocol (FTP) system using Python with a focus on:
-- Asynchronous networking
-- High concurrency
-- Efficient file transfer
-- Reliability and fault tolerance
-
-The system follows a client-server architecture allowing multiple clients to upload, download, and manage files on a central server.
+> A scalable, chunk-based FTP implementation in pure Python using `asyncio`. Built as a Computer Networks course project.
 
 ---
 
-## 🚀 Features
+## Overview
 
-### ⚡ Asynchronous Server
-- Built using Python asyncio
-- Handles multiple clients concurrently without threads
+AsyncFTP follows a client-server architecture allowing multiple clients to upload, download, and manage files on a central server — with no external dependencies.
 
-### 📂 File Operations
-- Upload files
-- Download files
-- List files on server
-
-### 📊 Performance Optimization
-- Chunk-based file transfer (reduces memory usage)
-- Throughput calculation (KB/s)
-- Timeout handling
-
-### 🔒 Reliability
-- Atomic file writes using temporary files
-- Cleanup of incomplete uploads
-- Robust error handling
-
-### 🧩 Extensible Protocol
-- Custom protocol design
-- Sequence numbers and hashing support
-- Future-ready for UDP
+**Key design goals:** high concurrency, low memory footprint, and reliable atomic file transfers.
 
 ---
 
-## 🏗️ Architecture
+## Features
 
-Client(s)
-   ↓
-TCP Socket
-   ↓
-Async Server (Event Loop)
-   ↓
-File Storage + Logging
+- **Async I/O** — built on `asyncio`; handles many clients concurrently without threads
+- **Chunk-based transfer** — 4096-byte chunks keep memory usage flat regardless of file size
+- **Atomic writes** — files are written to a temp path and renamed on completion, preventing partial/corrupt uploads
+- **SHA-256 integrity** — packets carry checksums for verification
+- **Throughput tracking** — real-time KB/s reported per transfer
+- **Timeout handling** — stale connections are detected and cleaned up
+- **Extensible protocol** — sequence numbers and chunk metadata support future UDP adaptation
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
-```bash
+```
 CN-Project-FTP/
-├── server.py              # Async FTP server
+├── server.py              # Async TCP server (asyncio event loop)
 ├── client.py              # Client interface
-├── protocol.py            # Protocol and chunking logic
-├── test_multi_client.py   # Multi-client testing
-├── storage/               # Stored files
-├── logs/                  # Logs
-├── cert.pem               # SSL cert (future use)
-├── key.pem                # SSL key (future use)
+├── protocol.py            # Packet format, chunking, hashing
+├── test_multi_client.py   # Concurrent client stress tests
+├── storage/               # Server-side file storage
+├── logs/                  # Connection and transfer logs
+├── cert.pem               # SSL certificate (future use)
+├── key.pem                # SSL private key (future use)
 └── README.md
 ```
----
-
-## ⚙️ Working
-
-### 1. Server Start
-- Listens on port 9000
-- Accepts multiple client connections asynchronously
-
-### 2. Commands Supported
-
-| Command | Description |
-|--------|------------|
-| LIST | Show files |
-| UPLOAD filename size | Upload file |
-| DOWNLOAD filename | Download file |
 
 ---
 
-### 3. Upload Flow
-1. Client sends: UPLOAD filename size
-2. Server reads file in chunks
-3. Writes to temporary file
-4. Atomically replaces final file
+## Architecture
 
-Key concept:
-- Prevents corruption using atomic write
-
----
-
-### 4. Download Flow
-1. Client requests file
-2. Server sends file size
-3. File streamed in chunks
-
----
-
-### 5. Protocol Layer
-- Chunk size: 4096 bytes
-- Packet format includes:
-  - Sequence number
-  - Total chunks
-  - Data length
-- File integrity using SHA-256 hashing
-
----
-
-## 📊 Performance Features
-
-| Feature | Benefit |
-|--------|--------|
-| Async I/O | High scalability |
-| Chunking | Low memory usage |
-| Streaming | Efficient transfer |
-| Timeout | Avoids hanging |
-| Throughput tracking | Performance analysis |
-
----
-
-## 🧪 Testing
-
-Run multi-client test:
-
-```bash
-python test_multi_client.py
+```
+Client(s)
+    │
+    ▼  TCP Socket
+Async Server (asyncio Event Loop)
+    │
+    ├── Protocol Layer (chunking, sequence numbers, SHA-256)
+    │
+    └── File Storage + Logging
 ```
 
-Tests:
-- Concurrent uploads
-- Server load handling
-- Stability
+Multiple clients connect over TCP. The event loop dispatches each connection as a coroutine, so no threads are needed. The protocol layer handles packetization before data touches the filesystem.
 
 ---
 
-## ▶️ Setup
+## Setup
 
-### Requirements
-- Python 3.8+
-- No external libraries required
+**Requirements:** Python 3.8+ — no external libraries.
 
----
-
-### Run Server
 ```bash
+# Start the server (listens on port 9000)
 python server.py
-```
 
----
-
-### Run Client
-```bash
+# Connect with the client
 python client.py
 ```
 
 ---
 
-### Example Commands
+## Supported Commands
+
+| Command | Description |
+|---|---|
+| `LIST` | List all files available on the server |
+| `UPLOAD <filename>` | Upload a local file to the server |
+| `DOWNLOAD <filename>` | Download a file from the server |
+
+---
+
+## How It Works
+
+### Upload
+
+1. Client sends `UPLOAD <filename> <size>`
+2. Server reads the file stream in 4096-byte chunks
+3. Data is written to a `.tmp` file
+4. On completion, the temp file is atomically renamed to the final path — ensuring no partial file is ever visible to other clients
+
+### Download
+
+1. Client sends `DOWNLOAD <filename>`
+2. Server responds with the file size
+3. File is streamed in chunks until complete
+
+### Protocol Packet Format
+
+Each chunk carries metadata for ordering and integrity:
+
+| Field | Description |
+|---|---|
+| Sequence number | Position of this chunk in the stream |
+| Total chunks | Allows receiver to detect missing chunks |
+| Data length | Actual byte count in this chunk |
+| SHA-256 hash | Integrity check (per-file) |
+
+---
+
+## Testing
+
+Run the multi-client stress test to verify concurrent behaviour:
+
+```bash
+python test_multi_client.py
 ```
-LIST
-UPLOAD sample.txt
-DOWNLOAD sample.txt
-```
+
+This spins up several clients simultaneously to test upload throughput, server stability under load, and correct file output.
 
 ---
 
-## 📄 Logging
-Logs stored in /logs
+## Logging
 
-Tracks:
-- Connections
-- File transfers
-- Errors
-
----
-
-## ⚠️ Limitations
-
-| Issue | Impact |
-|------|-------|
-| No authentication | Security risk |
-| No encryption | Data not secure |
-| TCP only | No UDP optimization |
-| No resume support | Restart needed |
+Logs are written to `/logs/` and capture:
+- Client connections and disconnections
+- File transfer start/completion events
+- Errors and timeouts
 
 ---
 
-## 🔮 Future Improvements
+## Known Limitations
 
-- TLS encryption
-- Resume upload/download
-- File compression
-- UDP-based protocol
-- Authentication system
-
----
-
-## 📌 Highlights
-
-- Asynchronous architecture
-- Atomic file handling
-- Chunk-based transfer
-- Performance monitoring
-- Protocol extensibility
+| Limitation | Impact |
+|---|---|
+| No authentication | Any client can connect and access files |
+| No encryption (TLS not yet active) | Data is transmitted in plaintext |
+| TCP only | No UDP fast-path for large file scenarios |
+| No resume support | Interrupted transfers must restart from scratch |
 
 ---
 
-## 🧠 Learning Outcomes
+## Planned Improvements
 
-- Async programming
-- Socket communication
-- File I/O optimization
-- System design
-- Protocol engineering
-
----
-
-## 📜 License
-Academic project (Computer Networks)
+- TLS encryption (cert/key already in place)
+- Resume support for interrupted transfers
+- File compression before transfer
+- UDP-based protocol variant
+- User authentication
 
 ---
 
-## ⭐ Summary
-A scalable, efficient, and reliable asynchronous FTP system demonstrating modern networking techniques using Python.
+## License
+
+Academic project — Computer Networks course.
