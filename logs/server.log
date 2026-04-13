@@ -1,0 +1,29 @@
+2026-04-07 16:42:51,741 | INFO | Connected: ('127.0.0.1', 63754)
+2026-04-07 16:42:51,741 | INFO | Connected: ('127.0.0.1', 63755)
+2026-04-07 16:42:51,742 | INFO | Connected: ('127.0.0.1', 63756)
+2026-04-07 16:42:51,746 | INFO | UPLOAD complete: file1.txt
+2026-04-07 16:42:51,749 | INFO | UPLOAD complete: medium_64KB.bin
+2026-04-07 16:42:51,750 | INFO | Disconnected: ('127.0.0.1', 63754)
+2026-04-07 16:42:51,751 | INFO | Disconnected: ('127.0.0.1', 63756)
+2026-04-07 16:42:51,755 | INFO | UPLOAD complete: large_256KB.bin
+2026-04-07 16:42:51,755 | INFO | Disconnected: ('127.0.0.1', 63755)
+2026-04-07 16:42:51,762 | INFO | Connected: ('127.0.0.1', 63757)
+2026-04-07 16:42:51,763 | INFO | Connected: ('127.0.0.1', 63758)
+2026-04-07 16:42:51,763 | INFO | Connected: ('127.0.0.1', 63759)
+2026-04-07 16:42:51,767 | INFO | DOWNLOAD: file1.txt
+2026-04-07 16:42:51,784 | INFO | DOWNLOAD: medium_64KB.bin
+2026-04-07 16:42:51,801 | INFO | Disconnected: ('127.0.0.1', 63757)
+2026-04-07 16:42:51,802 | INFO | Disconnected: ('127.0.0.1', 63759)
+2026-04-07 16:42:51,804 | INFO | DOWNLOAD: large_256KB.bin
+2026-04-07 16:42:51,804 | INFO | Disconnected: ('127.0.0.1', 63758)
+2026-04-07 16:57:35,125 | INFO | Connected: ('127.0.0.1', 55000)
+2026-04-07 16:57:35,126 | INFO | DOWNLOAD start: file1.txt (46 bytes) to ('127.0.0.1', 55000)
+2026-04-07 16:57:35,127 | INFO | DOWNLOAD complete: file1.txt
+2026-04-07 16:57:35,127 | INFO | Disconnected: ('127.0.0.1', 55000)
+2026-04-10 14:14:13,439 | INFO | Connected: ('127.0.0.1', 58681)
+2026-04-10 14:14:13,456 | INFO | LIST requested by ('127.0.0.1', 58681)
+2026-04-10 14:14:13,457 | INFO | Disconnected: ('127.0.0.1', 58681)
+2026-04-10 14:15:03,950 | INFO | Connected: ('127.0.0.1', 58682)
+2026-04-10 14:15:03,951 | INFO | UPLOAD start: small_1KB.bin (1024 bytes) from ('127.0.0.1', 58682)
+2026-04-10 14:15:03,996 | INFO | UPLOAD complete: small_1KB.bin
+2026-04-10 14:15:03,997 | INFO | Disconnected: ('127.0.0.1', 58682)
